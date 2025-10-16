@@ -1,0 +1,27 @@
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Node.js / Frontend
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+out/
+coverage/
+.pnpm-store/
+
+# Python
+__pycache__/
+.venv/
+venv/
+*.pyc
+
+# General
+.env*
+.cache/
+.jest-cache/
+*.log
+
