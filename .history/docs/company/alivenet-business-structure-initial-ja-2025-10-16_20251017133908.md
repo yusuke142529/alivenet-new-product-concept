@@ -167,8 +167,37 @@
 
 > これらは**BlueBean/CT-1上**でも価値を出し、**将来自社コアに置換**してもアーキテクチャが揺れません。
 
+---
 
-## 13. 用語補足（初心者向け簡易）
+## 13. “公開契約（Contract）”の雛形（any禁止／ベンダ非依存）
+
+> **イベント＝事実**、**コマンド＝指示**を判別可能共用体で固定。すべての実装はAdapterでこの契約に写像します。
+
+```ts
+// 事実（イベント）
+type InteractionEvent =
+  | { kind: "ContactOffered"; id: string; channel: "voice" | "chat" | "email"; queueId: string; at: string }
+  | { kind: "ContactAnswered"; id: string; agentId: string; at: string }
+  | { kind: "ContactEnded"; id: string; reason: "CustomerHangup" | "AgentHangup" | "System"; durationSec: number; at: string }
+  | { kind: "RecordingReady"; id: string; uri: string; durationSec: number; at: string }
+  | { kind: "TranscriptChunk"; id: string; channel: "voice" | "chat"; text: string; offsetMs: number; at: string };
+
+// 指示（コマンド）
+type InteractionCommand =
+  | { kind: "PlaceCall"; to: string; campaignId?: string }
+  | { kind: "WarmTransfer"; id: string; target: { type: "Agent" | "Queue"; id: string } }
+  | { kind: "ToggleHold"; id: string; on: boolean }
+  | { kind: "PauseRecording"; id: string; reason?: string }
+  | { kind: "ResumeRecording"; id: string }
+  | { kind: "TagCase"; id: string; tags: string[] };
+```
+
+* **ID写像**：キャリア/BlueBean/CT-1のIDは**社内統一ID**に写像、外部IDは境界内に隔離。
+* **将来性**：ベンダ替え・自社コア化時も**イベント/コマンドは不変**＝移行コスト最小。
+
+---
+
+## 14. 用語補足（初心者向け簡易）
 
 * **CTI**：電話とPC・CRMをつなぐ技術。着信ポップ、クリック発信、録音など。
 * **CCaaS**：コンタクトセンター機能をクラウド提供。音声＋デジタル（チャット等）＋分析。
@@ -179,7 +208,7 @@
 
 ---
 
-## 14. 出典（抜粋・主要）
+## 15. 出典（抜粋・主要）
 
 * 会社概要・届出番号・拠点等（公式）：([アライブネット][1])
 * コーポレートTOP（事業メッセージ）：([アライブネット][2])

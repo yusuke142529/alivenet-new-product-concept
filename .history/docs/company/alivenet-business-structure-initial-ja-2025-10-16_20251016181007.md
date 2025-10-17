@@ -167,8 +167,37 @@
 
 > これらは**BlueBean/CT-1上**でも価値を出し、**将来自社コアに置換**してもアーキテクチャが揺れません。
 
+---
 
-## 13. 用語補足（初心者向け簡易）
+## 13. “公開契約（Contract）”の雛形（any禁止／ベンダ非依存）
+
+> **イベント＝事実**、**コマンド＝指示**を判別可能共用体で固定。すべての実装はAdapterでこの契約に写像します。
+
+```ts
+// 事実（イベント）
+type InteractionEvent =
+  | { kind: "ContactOffered"; id: string; channel: "voice" | "chat" | "email"; queueId: string; at: string }
+  | { kind: "ContactAnswered"; id: string; agentId: string; at: string }
+  | { kind: "ContactEnded"; id: string; reason: "CustomerHangup" | "AgentHangup" | "System"; durationSec: number; at: string }
+  | { kind: "RecordingReady"; id: string; uri: string; durationSec: number; at: string }
+  | { kind: "TranscriptChunk"; id: string; channel: "voice" | "chat"; text: string; offsetMs: number; at: string };
+
+// 指示（コマンド）
+type InteractionCommand =
+  | { kind: "PlaceCall"; to: string; campaignId?: string }
+  | { kind: "WarmTransfer"; id: string; target: { type: "Agent" | "Queue"; id: string } }
+  | { kind: "ToggleHold"; id: string; on: boolean }
+  | { kind: "PauseRecording"; id: string; reason?: string }
+  | { kind: "ResumeRecording"; id: string }
+  | { kind: "TagCase"; id: string; tags: string[] };
+```
+
+* **ID写像**：キャリア/BlueBean/CT-1のIDは**社内統一ID**に写像、外部IDは境界内に隔離。
+* **将来性**：ベンダ替え・自社コア化時も**イベント/コマンドは不変**＝移行コスト最小。
+
+---
+
+## 14. 用語補足（初心者向け簡易）
 
 * **CTI**：電話とPC・CRMをつなぐ技術。着信ポップ、クリック発信、録音など。
 * **CCaaS**：コンタクトセンター機能をクラウド提供。音声＋デジタル（チャット等）＋分析。
@@ -179,7 +208,7 @@
 
 ---
 
-## 14. 出典（抜粋・主要）
+## 15. 出典（抜粋・主要）
 
 * 会社概要・届出番号・拠点等（公式）：([アライブネット][1])
 * コーポレートTOP（事業メッセージ）：([アライブネット][2])
@@ -199,7 +228,35 @@
 * OEM契約の範囲（一次サポート・SLA・価格・変更権限）—**社内資料で確定**。
 * 売上構成・粗利・チャーン等の**内部KPI**—**社内決裁で追記**。
 
+---
 
+## 次アクション（このドキュメントを起点に）
+
+1. **“公開契約（Event/Command）”の社内合意**
+2. **既存フローのイベント化（イベントハブPoC）**—まずはBlueBean/CT-1上で
+3. **課金/番号APIのスキーマ設計**—Alive Lineの明細ロジックをAPI化
+4. **Agent Assist/可視化**の最小実装—導入しやすい一社でAB検証
+5. **リスク項目**（緊急通報、APPI、録音停止/再開、監査）を**運用に埋め込む**
+
+---
+
+必要であれば、この内容を**Word/PDF形式**にも整えてお渡しします。次段では、この土台をもとに**新規事業（CPaaS核＋付加価値SaaS）**の**事業計画・ロードマップ**（投資・回収、KPI、販売戦略）に落とし込みます。
+
+[1]: https://alivenet.com/company/?utm_source=chatgpt.com "会社概要 | 株式会社アライブネット"
+[2]: https://alivenet.com/?utm_source=chatgpt.com "アライブネット"
+[3]: https://alivenet.com/service/voiperdial/?utm_source=chatgpt.com "クラウド型コールセンター システム・CTI システム「Voiper Dial」"
+[4]: https://alivenet.com/service/voipercall/?utm_source=chatgpt.com "イン・アウト両対応のCTI「Voiper Call」"
+[5]: https://alivenet.com/service/voipersms/?utm_source=chatgpt.com "圧倒的経費削減を実現するSMS配信サービス「Voiper SMS」"
+[6]: https://alivenet.com/service/aliveline/?utm_source=chatgpt.com "通話料の大幅カットを実現！「Alive Line」｜株式会社 ..."
+[7]: https://www.bluebean365.jp/partner/?utm_source=chatgpt.com "BlueBeanパートナー制度"
+[8]: https://comdesign.co.jp/?utm_source=chatgpt.com "これからのテレフォニープラットフォーム クラウドCTI \"CT ..."
+[9]: https://alivenet.com/service-steps/?utm_source=chatgpt.com "アライブネットのコンタクトセンターの導入方法"
+[10]: https://alivenet.com/service/voiperdial/function/?utm_source=chatgpt.com "クラウド型CTI システム「Voiper Dial」｜機能"
+[11]: https://alivenet.com/service/?utm_source=chatgpt.com "コエ（声）をイノベーションするアライブネットのサービス"
+[12]: https://www.renbiz.com/wp-content/uploads/2020/03/BlueBean%E3%81%94%E6%8F%90%E6%A1%88%E8%B3%87%E6%96%99201510.pdf?utm_source=chatgpt.com "クラウド型コールセンターシステム BlueBeanの導入提案"
+[13]: https://www.bluebean365.jp/guide/api/?utm_source=chatgpt.com "BlueBeanのAPI・CTI連携 | クラウド型コールセンターシステム ..."
+
+---
 
 ## 関連ドキュメント
 
